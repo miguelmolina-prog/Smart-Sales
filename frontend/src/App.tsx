@@ -1,4 +1,5 @@
 // src/App.tsx
+import "./App.css";
 import DispatchBoard from "./components/DispatchBoard";
 
 function App() {

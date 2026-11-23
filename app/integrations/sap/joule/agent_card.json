@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "agent_id": "smartsells-joule-b2b-ve",
+  "agent_name": "Smartsells Agent",
+  "version": "1.0.0",
+  "platform": "SAP Business AI / Joule Studio",
+  "description": "Enterprise B2B conversational sales agent receiving orders via WhatsApp, validating inventory and credit in S/4HANA, and orchestrating order creation post-approval.",
+  "risk_classification": {
+    "eu_ai_act_level": "Limited Risk",
+    "financial_risk_level": "Medium (Mitigated by Two-Factor Approval Workflow: Client & Sales Rep)",
+    "data_privacy_level": "High (IAS Principal Propagation, PII tokenized, no customer banking details stored)"
+  },
+  "governance": {
+    "owner": "Smartsells Architecture Team",
+    "sap_cloud_alm_enabled": true,
+    "cloud_identity_services": "IAS Technical User with least privilege",
+    "audit_trail_logging": "Registro de resultados (Firestore / SAP Audit Log)"
+  },
+  "skills": [
+    {
+      "name": "consulta_recomendacion",
+      "type": "read_only",
+      "target": "BigQuery REST API",
+      "description": "Predictive cross-selling and order replenish recommendations"
+    },
+    {
+      "name": "consulta_precios_pedido",
+      "type": "read_only",
+      "target": "SAP Build Actions -> S/4HANA Pricing (PR00, K007)",
+      "description": "Price check and preliminary cart total simulation"
+    },
+    {
+      "name": "consulta_stock_credito",
+      "type": "read_only",
+      "target": "BTP Destination Service -> S/4HANA ATP & FSCM",
+      "description": "Real-time stock availability and customer credit exposure"
+    },
+    {
+      "name": "aprobacion_pedido",
+      "type": "human_in_the_loop",
+      "target": "WhatsApp Interactive + Web Dispatch Board",
+      "description": "Explicit approval by both customer and assigned sales rep"
+    },
+    {
+      "name": "crear_pedido_s4hana",
+      "type": "write",
+      "target": "Cloud Connector -> OData API_SALES_ORDER_SRV",
+      "description": "Official sales order creation in S/4HANA upon full approval"
+    }
+  ]
+}

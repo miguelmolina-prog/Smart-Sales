@@ -14,6 +14,7 @@ export interface Pedido {
   direccion?: string;
   conciliado?: boolean;
   wa_id?: string;
+  sap_order_id?: string;
   fecha_creacion?: { seconds: number; nanoseconds: number };
 }
 
@@ -32,4 +33,37 @@ export interface TicketChat {
   incidencia: string;
   estado: "escalado" | "resuelto";
   mensajes: Mensaje[];
+}
+
+export interface SapStatusResponse {
+  status: string;
+  mode: string;
+  components: {
+    channel_adapter: {
+      name: string;
+      status: string;
+      features: string[];
+    };
+    sap_btp: {
+      joule_orchestrator: string;
+      generative_ai_hub: string;
+      destination_service: string;
+      cloud_connector_tunnel: string;
+    };
+    sap_s4hana: {
+      system_id: string;
+      client: string;
+      odata_services: string[];
+      stock_atp_check: string;
+    };
+    bigquery: {
+      recommendation_engine: string;
+      model_version: string;
+    };
+  };
+  governance: {
+    leanix_agent_card: string;
+    cloud_alm_tracing: string;
+    risk_class: string;
+  };
 }

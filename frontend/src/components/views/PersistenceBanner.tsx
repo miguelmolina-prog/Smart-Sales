@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { collection, query, where, onSnapshot, doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../../services/firebase";
+import { ZapIcon, CloseIcon } from "../icons/Icons";
 
 export default function PersistenceBanner() {
   const [sesionesInactivas, setSesionesInactivas] = useState<any[]>([]);
@@ -59,116 +60,134 @@ export default function PersistenceBanner() {
   if (sesionesInactivas.length === 0) return null;
 
   return (
-    <div style={{ backgroundColor: "#fffbeb", borderBottom: "1px solid #fde68a", padding: "0.75rem 2rem", flexShrink: 0 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.75rem" }}>
-        <span style={{ fontSize: "1.2rem" }}>⏱️</span>
-        <h3 style={{ color: "#d97706", margin: 0, fontSize: "0.95rem", fontWeight: 800, textTransform: "uppercase" }}>
-          Persistencia de Clientes Inactivos ({sesionesInactivas.length})
-        </h3>
+    <div
+      style={{
+        backgroundColor: "#fffdf5",
+        borderBottom: "1px solid #fef08a",
+        padding: "12px 28px",
+        flexShrink: 0
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
+        <div style={{ width: "20px", height: "20px", color: "#b45309", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <ZapIcon size={16} />
+        </div>
+        <h4 style={{ color: "#92400e", margin: 0, fontSize: "0.82rem", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+          Recuperación de Carritos en Riesgo ({sesionesInactivas.length})
+        </h4>
       </div>
       
-      <div style={{ display: "flex", gap: "1rem", overflowX: "auto", paddingBottom: "0.5rem" }}>
+      <div style={{ display: "flex", gap: "12px", overflowX: "auto", paddingBottom: "4px" }}>
         {sesionesInactivas.map((sesion) => {
           const yaContactado = (sesion.intentos_persistencia || 0) > 0;
 
           return (
-            <div key={sesion.id} style={{ 
-              backgroundColor: "#ffffff", 
-              border: yaContactado ? "1px solid #cbd5e1" : "1px solid #fcd34d", 
-              borderRadius: "0.5rem", 
-              padding: "0.85rem", 
-              minWidth: "340px", 
-              maxWidth: "360px",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.03)",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between"
-            }}>
+            <div
+              key={sesion.id}
+              style={{ 
+                backgroundColor: "#ffffff", 
+                border: yaContactado ? "1px solid #e2e8f0" : "1px solid #fde047", 
+                borderRadius: "14px", 
+                padding: "14px", 
+                minWidth: "320px", 
+                maxWidth: "340px",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between"
+              }}
+            >
               <div>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
-                  <strong style={{ color: "#000000", fontSize: "0.95rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                  <strong style={{ color: "var(--text-main)", fontSize: "0.88rem" }}>
                     {sesion.cliente_nombre || `Cliente ${sesion.wa_id.slice(-4)}`}
                   </strong>
                   
                   {yaContactado ? (
-                    <span style={{ fontSize: "0.72rem", backgroundColor: "#fef3c7", color: "#b45309", padding: "0.15rem 0.4rem", borderRadius: "4px", fontWeight: 700 }}>
-                      ⚠️ Contactado ({sesion.ultima_estrategia_retencion})
+                    <span style={{ fontSize: "0.7rem", backgroundColor: "#fef3c7", color: "#b45309", padding: "2px 8px", borderRadius: "999px", fontWeight: 700 }}>
+                      Contactado ({sesion.ultima_estrategia_retencion})
                     </span>
                   ) : (
-                    <span style={{ fontSize: "0.72rem", backgroundColor: "#eff6ff", color: "#0055FF", padding: "0.15rem 0.4rem", borderRadius: "4px", fontWeight: 700 }}>
-                      Sin contactar
+                    <span style={{ fontSize: "0.7rem", backgroundColor: "#edf4ff", color: "#005bff", padding: "2px 8px", borderRadius: "999px", fontWeight: 700 }}>
+                      Pendiente
                     </span>
                   )}
                 </div>
                 
-                <p style={{ color: "#475569", fontSize: "0.85rem", margin: "0 0 0.75rem 0", lineHeight: "1.3" }}>
-                  🛒 <strong>{sesion.carrito || "Sin artículos registrados"}</strong><br/>
-                  💵 Total: <strong>${sesion.total_estimado || 0} USD</strong>
+                <p style={{ color: "var(--text-muted)", fontSize: "0.82rem", margin: "0 0 12px 0", lineHeight: "1.3" }}>
+                  <strong>{sesion.carrito || "Sin artículos registrados"}</strong><br/>
+                  Total Estimado: <strong style={{ color: "var(--text-main)" }}>${sesion.total_estimado || 0} USD</strong>
                 </p>
               </div>
 
-              {/* Botones de acción con bloqueo anti-spam */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.4rem" }}>
+              {/* Botones de acción sin emojis */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
                 <button 
                   disabled={yaContactado}
                   onClick={() => ejecutarEstrategia(sesion.wa_id, "ofrecer_cashea")}
                   style={{ 
-                    backgroundColor: yaContactado ? "#e2e8f0" : "#0055FF", 
+                    backgroundColor: yaContactado ? "#f1f5f9" : "#005bff", 
                     color: yaContactado ? "#94a3b8" : "#ffffff", 
-                    border: "none", padding: "0.45rem", borderRadius: "4px", fontSize: "0.75rem", fontWeight: 700, 
+                    border: "none", padding: "7px 10px", borderRadius: "8px", fontSize: "0.74rem", fontWeight: 700, 
                     cursor: yaContactado ? "not-allowed" : "pointer" 
-                  }}>
-                  💳 Ofrecer Cashea
+                  }}
+                >
+                  Ofrecer Cuotas
                 </button>
 
                 <button 
                   disabled={yaContactado}
                   onClick={() => ejecutarEstrategia(sesion.wa_id, "alerta_stock")}
                   style={{ 
-                    backgroundColor: yaContactado ? "#e2e8f0" : "#dc2626", 
+                    backgroundColor: yaContactado ? "#f1f5f9" : "#dc2626", 
                     color: yaContactado ? "#94a3b8" : "#ffffff", 
-                    border: "none", padding: "0.45rem", borderRadius: "4px", fontSize: "0.75rem", fontWeight: 700, 
+                    border: "none", padding: "7px 10px", borderRadius: "8px", fontSize: "0.74rem", fontWeight: 700, 
                     cursor: yaContactado ? "not-allowed" : "pointer" 
-                  }}>
-                  ⚠️ Reserva Stock
+                  }}
+                >
+                  Alerta Reserva
                 </button>
 
                 <button 
                   disabled={yaContactado}
                   onClick={() => ejecutarEstrategia(sesion.wa_id, "otra_recomendacion")}
                   style={{ 
-                    backgroundColor: yaContactado ? "#e2e8f0" : "#059669", 
+                    backgroundColor: yaContactado ? "#f1f5f9" : "#059669", 
                     color: yaContactado ? "#94a3b8" : "#ffffff", 
-                    border: "none", padding: "0.45rem", borderRadius: "4px", fontSize: "0.75rem", fontWeight: 700, 
+                    border: "none", padding: "7px 10px", borderRadius: "8px", fontSize: "0.74rem", fontWeight: 700, 
                     cursor: yaContactado ? "not-allowed" : "pointer" 
-                  }}>
-                  🔄 Otra Opción
+                  }}
+                >
+                  Alternativas
                 </button>
 
                 <button 
                   disabled={yaContactado}
                   onClick={() => ejecutarEstrategia(sesion.wa_id, "ofrecer_humano")}
                   style={{ 
-                    backgroundColor: yaContactado ? "#e2e8f0" : "#FF6B00", 
+                    backgroundColor: yaContactado ? "#f1f5f9" : "#111317", 
                     color: yaContactado ? "#94a3b8" : "#ffffff", 
-                    border: "none", padding: "0.45rem", borderRadius: "4px", fontSize: "0.75rem", fontWeight: 700, 
+                    border: "none", padding: "7px 10px", borderRadius: "8px", fontSize: "0.74rem", fontWeight: 700, 
                     cursor: yaContactado ? "not-allowed" : "pointer" 
-                  }}>
-                  👤 Pasar a Humano
+                  }}
+                >
+                  Asignar Asesor
                 </button>
 
-                {/* Botón principal cuando ya se aplicó persistencia */}
                 <button 
                   onClick={() => cerrarVentaPerdida(sesion)}
                   style={{ 
                     gridColumn: "span 2", 
                     backgroundColor: yaContactado ? "#fee2e2" : "#f8fafc", 
                     color: yaContactado ? "#b91c1c" : "#64748b", 
-                    border: yaContactado ? "1px solid #fca5a5" : "1px solid #cbd5e1", 
-                    padding: "0.45rem", borderRadius: "4px", fontSize: "0.75rem", fontWeight: 700, 
-                    cursor: "pointer", marginTop: "0.2rem" 
-                  }}>
-                  {yaContactado ? "✕ Dar por Perdida y Archivar" : "✕ Descartar sin Persistencia"}
+                    border: yaContactado ? "1px solid #fca5a5" : "1px solid #e2e8f0", 
+                    padding: "7px 10px", borderRadius: "8px", fontSize: "0.74rem", fontWeight: 700, 
+                    cursor: "pointer", marginTop: "2px",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: "6px"
+                  }}
+                >
+                  <CloseIcon size={12} />
+                  <span>{yaContactado ? "Archivar Registro" : "Descartar sin Persistencia"}</span>
                 </button>
               </div>
             </div>

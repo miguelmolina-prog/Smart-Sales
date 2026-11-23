@@ -11,6 +11,7 @@ from google.cloud.firestore_v1.base_query import FieldFilter
 
 from app.health import router as health_router
 from app.webhook.router import router as webhook_router
+from app.api.routes.sap_routes import router as sap_router
 from app.whatsapp_client import send_whatsapp_message
 from app.store.firestore_client import get_firestore_client
 from app.queue.tasks import buffer_inbound
@@ -33,6 +34,7 @@ app.add_middleware(
 # Routers existentes
 app.include_router(health_router)
 app.include_router(webhook_router)
+app.include_router(sap_router)
 
 
 # =====================================================================
