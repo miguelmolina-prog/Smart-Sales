@@ -39,7 +39,7 @@ body, html {
   width: 100vw;
   overflow: hidden;
   position: relative;
-  background-color: var(--bg-canvas);
+  background-color: var(--card-bg);
 }
 
 /* Main Content Area */
@@ -50,7 +50,7 @@ body, html {
   min-width: 0;
   height: 100%;
   overflow: hidden;
-  background-color: var(--bg-canvas);
+  background-color: var(--card-bg);
 }
 
 .view-container {
@@ -63,17 +63,40 @@ body, html {
   gap: 24px;
 }
 
-/* Top Header */
 .app-header {
   height: 72px;
   background-color: var(--card-bg);
-  border-bottom: 1px solid var(--border-subtle);
+  /* border-bottom eliminado */
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 28px;
   flex-shrink: 0;
   gap: 16px;
+}
+
+.app-sidebar {
+  width: 270px;
+  background-color: var(--card-bg);
+  /* border-right eliminado */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px 20px 20px;
+  flex-shrink: 0;
+  height: 100%;
+  box-sizing: border-box;
+  transition: transform 0.25s ease;
+  z-index: 40;
+}
+
+.content-canvas {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column; /* Por si metes el PersistenceBanner adentro */
+  background-color: var(--bg-canvas);
+  border-top-left-radius: 50px; /* Esquina redondeada que une Header y Sidebar */
 }
 
 .header-left {
@@ -184,21 +207,6 @@ body, html {
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
-/* Sidebar */
-.app-sidebar {
-  width: 270px;
-  background-color: var(--card-bg);
-  border-right: 1px solid var(--border-subtle);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 24px 20px 20px;
-  flex-shrink: 0;
-  height: 100%;
-  box-sizing: border-box;
-  transition: transform 0.25s ease;
-  z-index: 40;
-}
 
 .brand-section {
   display: flex;

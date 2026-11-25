@@ -37,7 +37,7 @@ export default function DispatchBoard() {
         <PersistenceBanner />
 
         {/* Content Views */}
-        <main style={{ flex: 1, overflow: "hidden", display: "flex" }}>
+        <main className="content-canvas">
           {vistaPrincipal === "Dashboard" && (
             <ExecutiveDashboard onNavigateToTab={setVistaPrincipal} />
           )}
