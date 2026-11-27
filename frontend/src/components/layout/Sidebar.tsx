@@ -1,162 +1,199 @@
 import {
   LogoIcon,
   OverviewIcon,
-  DocumentIcon,
-  TrendingIcon,
-  UserIcon,
   ChatIcon,
   BoxIcon,
-  BarChartIcon,
-  ChevronDownIcon,
+  ServerIcon,
+  ShieldIcon,
+  SettingsIcon,
+  PlayIcon,
   ArrowUpRightIcon,
-  PlusIcon
 } from "../icons/Icons";
+import { useDemo } from "../../context/DemoContext";
+import type { TabId } from "../../types";
 
 interface SidebarProps {
-  currentTab: string;
-  onSelectTab: (tab: string) => void;
   isOpen: boolean;
   onCloseMobile: () => void;
 }
 
-export default function Sidebar({ currentTab, onSelectTab, isOpen, onCloseMobile }: SidebarProps) {
-  const handleNav = (tab: string) => {
-    onSelectTab(tab);
+export default function Sidebar({ isOpen, onCloseMobile }: SidebarProps) {
+  const {
+    activeTab,
+    setActiveTab,
+    tenants,
+    currentTenant,
+    setTenantId,
+    escalations,
+    orders,
+    agentPausedGlobal,
+  } = useDemo();
+
+  const handleNav = (tab: TabId) => {
+    setActiveTab(tab);
     onCloseMobile();
   };
+
+  const pendingEscalations = escalations.filter(
+    (e) => e.tenantId === currentTenant.id && e.estado !== "resuelto"
+  ).length;
+  const pendingOrders = orders.filter(
+    (o) => o.tenantId === currentTenant.id && (o.estado === "pendiente_revision" || o.estado === "error")
+  ).length;
 
   return (
     <>
       {isOpen && <div className="sidebar-backdrop" onClick={onCloseMobile} />}
-      <aside className={`app-sidebar ${isOpen ? "open" : ""}`}>
-        <div>
-          {/* Brand Row */}
-          <div className="brand-section">
-            <LogoIcon size={34} />
-            <h1 className="brand-title">Smartsells</h1>
+      <aside className={`app-sidebar ${isOpen ? "open" : ""}`} aria-label="Menú principal">
+        <div style={{ overflowY: "auto" }}>
+          {/* Brand */}
+          <div className="brand-section" style={{ marginBottom: "18px" }}>
+            <LogoIcon size={32} />
+            <h1 className="brand-title">Smart Sales</h1>
           </div>
 
-          {/* Welcome User Block (Directly in Sidebar as seen in Image 2) */}
-          <div className="welcome-block">
-            <h2 className="welcome-heading">Welcome<br />Back, Daniel!</h2>
-            <p className="welcome-sub">Current summary financial report</p>
+          {/* Empresa */}
+          <div style={{ marginBottom: "22px", padding: "0 4px" }}>
+            <select
+              aria-label="Seleccionar empresa"
+              value={currentTenant.id}
+              onChange={(e) => setTenantId(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "9px 12px",
+                borderRadius: "12px",
+                border: "1px solid var(--border-card)",
+                backgroundColor: "#f8fafc",
+                fontSize: "0.84rem",
+                fontWeight: 600,
+                color: "var(--text-main)",
+                cursor: "pointer",
+              }}
+            >
+              {tenants.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.nombre}
+                </option>
+              ))}
+            </select>
           </div>
 
-          {/* Group 1: HOME */}
+          {/* Menú principal */}
           <div className="nav-group">
-            <div className="nav-group-title">HOME</div>
+            <div className="nav-group-title">Operación</div>
             <nav style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
               <button
-                className={`sidebar-nav-btn ${currentTab === "Dashboard" ? "active" : ""}`}
-                onClick={() => handleNav("Dashboard")}
+                className={`sidebar-nav-btn ${activeTab === "dashboard" ? "active" : ""}`}
+                onClick={() => handleNav("dashboard")}
               >
                 <OverviewIcon size={18} />
-                <span style={{ flex: 1 }}>Overview</span>
-                {currentTab === "Dashboard" && <ChevronDownIcon size={14} />}
+                <span style={{ flex: 1 }}>Inicio</span>
               </button>
 
               <button
-                className={`sidebar-nav-btn ${currentTab === "SAP S/4HANA" ? "active" : ""}`}
-                onClick={() => handleNav("SAP S/4HANA")}
+                className={`sidebar-nav-btn ${activeTab === "escalamientos" ? "active" : ""}`}
+                onClick={() => handleNav("escalamientos")}
               >
-                <DocumentIcon size={18} />
-                <span style={{ flex: 1 }}>Legality Statement</span>
+                <ChatIcon size={18} />
+                <span style={{ flex: 1 }}>Escalamientos</span>
+                {pendingEscalations > 0 && (
+                  <span
+                    style={{
+                      backgroundColor: activeTab === "escalamientos" ? "#ef4444" : "#fee2e2",
+                      color: activeTab === "escalamientos" ? "#fff" : "#b91c1c",
+                      fontSize: "0.72rem",
+                      fontWeight: 700,
+                      padding: "2px 8px",
+                      borderRadius: "999px",
+                    }}
+                  >
+                    {pendingEscalations}
+                  </span>
+                )}
               </button>
 
               <button
-                className={`sidebar-nav-btn ${currentTab === "Analytics" ? "active" : ""}`}
-                onClick={() => handleNav("Analytics")}
+                className={`sidebar-nav-btn ${activeTab === "pedidos" ? "active" : ""}`}
+                onClick={() => handleNav("pedidos")}
               >
-                <TrendingIcon size={18} />
-                <span style={{ flex: 1 }}>Financial Projection</span>
-              </button>
-
-              <button
-                className="sidebar-nav-btn"
-                onClick={() => handleNav("SAP S/4HANA")}
-              >
-                <UserIcon size={18} />
-                <span style={{ flex: 1 }}>Account</span>
+                <BoxIcon size={18} />
+                <span style={{ flex: 1 }}>Pedidos</span>
+                {pendingOrders > 0 && (
+                  <span
+                    style={{
+                      backgroundColor: activeTab === "pedidos" ? "#f59e0b" : "#fef3c7",
+                      color: activeTab === "pedidos" ? "#111" : "#92400e",
+                      fontSize: "0.72rem",
+                      fontWeight: 700,
+                      padding: "2px 8px",
+                      borderRadius: "999px",
+                    }}
+                  >
+                    {pendingOrders}
+                  </span>
+                )}
               </button>
             </nav>
           </div>
 
-          {/* Group 2: POCKET / OPERATIONS */}
           <div className="nav-group">
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingRight: "8px", marginBottom: "8px" }}>
-              <div className="nav-group-title" style={{ margin: 0 }}>POCKET</div>
-              <button
-                style={{
-                  border: "none",
-                  backgroundColor: "#edf4ff",
-                  color: "#005bff",
-                  width: "22px",
-                  height: "22px",
-                  borderRadius: "50%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  cursor: "pointer"
-                }}
-                title="Nuevo canal"
-              >
-                <PlusIcon size={13} />
-              </button>
-            </div>
+            <div className="nav-group-title">Sistema</div>
             <nav style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
               <button
-                className={`sidebar-nav-btn ${currentTab === "Chats" ? "active" : ""}`}
-                onClick={() => handleNav("Chats")}
+                className={`sidebar-nav-btn ${activeTab === "sap" ? "active" : ""}`}
+                onClick={() => handleNav("sap")}
               >
-                <ChatIcon size={18} />
-                <span style={{ flex: 1 }}>WhatsApp Chats</span>
+                <ServerIcon size={18} />
+                <span style={{ flex: 1 }}>Conexión SAP</span>
               </button>
 
               <button
-                className={`sidebar-nav-btn ${currentTab === "Orders" ? "active" : ""}`}
-                onClick={() => handleNav("Orders")}
+                className={`sidebar-nav-btn ${activeTab === "gobernanza" ? "active" : ""}`}
+                onClick={() => handleNav("gobernanza")}
               >
-                <BoxIcon size={18} />
-                <span style={{ flex: 1 }}>Orders Dispatch</span>
+                <ShieldIcon size={18} />
+                <span style={{ flex: 1 }}>Control de IA</span>
+                {agentPausedGlobal && (
+                  <span
+                    style={{
+                      backgroundColor: "#ef4444",
+                      color: "#fff",
+                      fontSize: "0.65rem",
+                      fontWeight: 700,
+                      padding: "2px 6px",
+                      borderRadius: "999px",
+                    }}
+                  >
+                    PAUSA
+                  </span>
+                )}
               </button>
 
               <button
-                className={`sidebar-nav-btn ${currentTab === "Analytics" ? "active" : ""}`}
-                onClick={() => handleNav("Analytics")}
+                className={`sidebar-nav-btn ${activeTab === "configuracion" ? "active" : ""}`}
+                onClick={() => handleNav("configuracion")}
               >
-                <BarChartIcon size={18} />
-                <span style={{ flex: 1 }}>Analytics</span>
+                <SettingsIcon size={18} />
+                <span style={{ flex: 1 }}>Configuración</span>
               </button>
             </nav>
           </div>
         </div>
 
-        {/* Bottom Status Card (Matching Image 2 Promo Card) */}
+        {/* Demo CTA */}
         <div className="sidebar-promo-card">
           <div style={{ position: "relative", zIndex: 2 }}>
-            <h4 className="promo-title">Unlock full version</h4>
-            <p className="promo-sub">20+ SAP & WhatsApp metrics</p>
-            <button
-              className="promo-btn"
-              onClick={() => handleNav("SAP S/4HANA")}
-            >
-              <span>14 day free-trial</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px" }}>
+              <PlayIcon size={14} />
+              <span style={{ fontSize: "0.72rem", fontWeight: 700 }}>Simulador en vivo</span>
+            </div>
+            <h4 className="promo-title">Probar Agente</h4>
+            <p className="promo-sub">Simula una compra por WhatsApp y su envío a SAP</p>
+            <button className="promo-btn" onClick={() => handleNav("demo")}>
+              <span>Abrir Demo</span>
               <ArrowUpRightIcon size={14} />
             </button>
           </div>
-          {/* Subtle light bubble background effect */}
-          <div
-            style={{
-              position: "absolute",
-              right: "-20px",
-              bottom: "-20px",
-              width: "110px",
-              height: "110px",
-              borderRadius: "50%",
-              background: "radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%)",
-              zIndex: 1
-            }}
-          />
         </div>
       </aside>
     </>

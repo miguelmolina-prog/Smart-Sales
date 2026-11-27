@@ -39,7 +39,9 @@ body, html {
   width: 100vw;
   overflow: hidden;
   position: relative;
-  background-color: var(--card-bg);
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 48%),
+    linear-gradient(135deg, #f4f8fd 0%, #e1ecfa 48%, #c7dcf5 100%);
 }
 
 /* Main Content Area */
@@ -50,7 +52,7 @@ body, html {
   min-width: 0;
   height: 100%;
   overflow: hidden;
-  background-color: var(--card-bg);
+  background-color: transparent;
 }
 
 .view-container {
@@ -65,20 +67,20 @@ body, html {
 
 .app-header {
   height: 72px;
-  background-color: var(--card-bg);
-  /* border-bottom eliminado */
+  background-color: rgba(255, 255, 255, 0.92);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 28px;
   flex-shrink: 0;
   gap: 16px;
+  transition: background-color 0.35s ease, backdrop-filter 0.35s ease;
+  z-index: 30;
 }
 
 .app-sidebar {
   width: 270px;
-  background-color: var(--card-bg);
-  /* border-right eliminado */
+  background-color: rgba(255, 255, 255, 0.92);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -86,17 +88,21 @@ body, html {
   flex-shrink: 0;
   height: 100%;
   box-sizing: border-box;
-  transition: transform 0.25s ease;
+  transition: transform 0.25s ease, background-color 0.35s ease;
   z-index: 40;
+}
+
+.app-shell.is-scrolled .app-header,
+.app-shell.is-scrolled .app-sidebar {
+  background-color: transparent;
 }
 
 .content-canvas {
   flex: 1;
   overflow: hidden;
   display: flex;
-  flex-direction: column; /* Por si metes el PersistenceBanner adentro */
-  background-color: var(--bg-canvas);
-  border-top-left-radius: 50px; /* Esquina redondeada que une Header y Sidebar */
+  flex-direction: column;
+  background-color: transparent;
 }
 
 .header-left {
@@ -108,13 +114,17 @@ body, html {
 .nav-tabs-pill {
   display: flex;
   align-items: center;
-  background-color: #f3f5f8;
+  background-color: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
   border-radius: var(--radius-pill);
   padding: 4px;
   gap: 4px;
+  box-shadow: 0 4px 14px rgba(18, 20, 24, 0.04);
   overflow-x: auto;
   scrollbar-width: none;
 }
+
 .nav-tabs-pill::-webkit-scrollbar {
   display: none;
 }
@@ -169,13 +179,15 @@ body, html {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  border: 1px solid var(--border-card);
-  background-color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  background-color: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--text-main);
   cursor: pointer;
+  box-shadow: 0 2px 8px rgba(18, 20, 24, 0.04);
   transition: all 0.15s ease;
 }
 
@@ -187,8 +199,11 @@ body, html {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 4px 6px;
+  padding: 4px 12px 4px 6px;
   border-radius: var(--radius-pill);
+  background-color: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
   cursor: pointer;
 }
 
@@ -276,7 +291,7 @@ body, html {
 }
 
 .sidebar-nav-btn:hover {
-  background-color: #f6f8fb;
+  background-color: rgba(255, 255, 255, 0.65);
   color: var(--text-main);
 }
 
@@ -284,6 +299,7 @@ body, html {
   background-color: var(--dark-card);
   color: #ffffff;
   font-weight: 600;
+  box-shadow: 0 6px 16px rgba(19, 20, 24, 0.18);
 }
 
 /* Sidebar Promo / SAP Card */
@@ -345,10 +361,11 @@ body, html {
 
 /* Base Card Style */
 .bento-card {
-  background-color: var(--card-bg);
+  background-color: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(12px);
   border-radius: var(--radius-xl);
-  border: 1px solid var(--border-card);
-  box-shadow: var(--shadow-subtle);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 28px -4px rgba(30, 58, 110, 0.06);
   padding: 24px 28px;
   position: relative;
 }
@@ -457,6 +474,31 @@ body, html {
     display: none !important;
   }
   .sidebar-backdrop {
+    display: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .app-sidebar,
+  .app-shell.is-scrolled .app-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    background-color: #ffffff;
+    transform: translateX(-100%);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.25);
+  }
+  .app-sidebar.open {
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 1180px) {
+  .escalations-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .global-search-wrap {
     display: none !important;
   }
 }
